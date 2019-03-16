@@ -10,9 +10,9 @@ public class Actor {
 
     private String name ;
 
-    private Float  popularity ;
+    private String popularity ;
 
-    public Actor(String profilePath, String name, Float popularity) {
+    public Actor(String profilePath, String name, String popularity) {
         this.profilePath = profilePath;
         this.name = name;
         this.popularity = popularity;
@@ -26,7 +26,7 @@ public class Actor {
         return name;
     }
 
-    public Float getPopularity() {
+    public String getPopularity() {
         return popularity;
     }
 
