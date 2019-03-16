@@ -27,7 +27,7 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
     //constructor
     public ContainerAdapter(Context mContext, List<Actor> actors) {
         this.mContext = mContext;
-        this.actors = actors; //shallow copy or deep copy? 
+        this.actors = actors; //shallow copy or deep copy?
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
@@ -59,7 +59,7 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
 
-        String BASE_URL = ""; // TODO
+        String BASE_URL = "https://image.tmdb.org/t/p/w500"; // play with size, for performance
 
         //TODO
         //from which object .load() will get the uri ?
