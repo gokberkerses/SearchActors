@@ -3,6 +3,7 @@ package com.searchactors;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.ViewHolder> {
@@ -25,12 +27,19 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
     List<Actor> actors ;
 
     //constructor
-    public ContainerAdapter(Context mContext, List<Actor> actors) {
+    public ContainerAdapter(Context mContext) {
+        Log.d(TAG, "ContainerAdapter: ");
+        
         this.mContext = mContext;
-        this.actors = actors; //shallow copy or deep copy?
+        this.actors = new ArrayList<>() ;
+    }
+
+    public void setActors(List<Actor> actorsResult) {
+        this.actors =  actorsResult ;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
+        private static final String TAG = "ViewHolder";
         RelativeLayout actorLayout ;
 
         ImageView actorImage ;
@@ -45,12 +54,15 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
             this.actorImage = itemView.findViewById(R.id.actor_image);
             this.actorName = itemView.findViewById(R.id.actor_name);
             this.actorPopularity = itemView.findViewById(R.id.actor_popularity);
+
+            Log.d(TAG, "ViewHolder: ");
         }
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+        Log.d(TAG, "onCreateViewHolder: ");
         View view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.actor_item, viewGroup, false );
         return new ViewHolder(view) ;
@@ -58,6 +70,7 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+        Log.d(TAG, "onBindViewHolder: ");
 
         String BASE_URL = "https://image.tmdb.org/t/p/w500"; // play with size, for performance
 
@@ -78,6 +91,8 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
 
     @Override
     public int getItemCount() {
+        Log.d(TAG, "getItemCount: ");
+        
         return actors.size() ;
     }
 

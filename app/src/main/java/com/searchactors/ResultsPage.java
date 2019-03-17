@@ -6,14 +6,14 @@ import java.util.List;
 
 public class ResultsPage {
 
-    Integer page ;
+    private Integer page ;
     List<Actor> results ;
 
     @SerializedName("total_results")
-    Integer totalResults ;
+    private Integer totalResults ;
 
     @SerializedName("total_pages")
-    Integer totalPages ;
+    private Integer totalPages ;
 
     public ResultsPage(Integer page, List<Actor> results, Integer totalResults, Integer totalPages) {
         this.page = page;

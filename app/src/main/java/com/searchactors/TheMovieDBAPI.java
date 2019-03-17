@@ -4,20 +4,24 @@ import java.lang.annotation.Target;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
-import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface TheMovieDBAPI {
     String BASE_URL = "https://api.themoviedb.org/3/" ;
 
 
-    @GET("person/popular?api_key=90f9f56e299e21f06338b0197a5ff6f6&language=en-US&page={currentPage}")
+    @GET("person/popular")
     Call<ResultsPage> getPopularResults(
-            @Path("currentPage") String currentPage
+            @Query("api_key") String apiKey,
+            @Query("page") int queriedPage
     ) ;
 
-    @GET("search/person?api_key=90f9f56e299e21f06338b0197a5ff6f6&language=en-US&page={currentPage}&include_adult=false")
+    @GET("search/person")
     Call<ResultsPage> getSearchResults(
-            @Path("currentPage") String currentPage
+            @Query("api_key") String apiKey,
+            @Query("query") String query,
+            @Query("page") int queriedPage
+            // check whether include_adult is false
     ) ;
 
 }

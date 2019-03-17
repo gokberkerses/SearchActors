@@ -7,9 +7,9 @@ public class Actor {
 
     @SerializedName("profile_path")
     private String profilePath ;
-
+    @SerializedName("name")
     private String name ;
-
+    @SerializedName("popularity")
     private String popularity ;
 
     public Actor(String profilePath, String name, String popularity) {
