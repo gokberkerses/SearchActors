@@ -22,17 +22,37 @@ public class MainActivity extends AppCompatActivity {
 
     protected List<Actor> popularActors = new ArrayList<>() ;
     protected int queryPage = 1 ;
+    protected int totalPage ;
 
     private static final String apiKey = "90f9f56e299e21f06338b0197a5ff6f6" ;
     // TODO
     // private boolean isLastPage = false ;
     // when implementing loadMore
 
+    Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(TheMovieDBAPI.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build() ;
+
+    TheMovieDBAPI TMDBAPI = retrofit.create(TheMovieDBAPI.class) ;
+
+    RecyclerView recyclerView ;
+
+    ContainerAdapter adapter ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: ");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        recyclerView = findViewById(R.id.container) ;
+
+        adapter = new ContainerAdapter(this) ;
+
+        recyclerView.setAdapter(adapter) ;
+        recyclerView.setLayoutManager(new LinearLayoutManager(this ));
+
 
         Log.d(TAG, "onCreate: initializing actors...");
         initPopularActorsByPage(queryPage) ;
@@ -43,13 +63,6 @@ public class MainActivity extends AppCompatActivity {
     //--retrofit request----------------------------------------------------------------------------
     private void initPopularActorsByPage(int page){
         Log.v(TAG, "initPopularActorsByPage: ");
-        
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(TheMovieDBAPI.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build() ;
-
-        TheMovieDBAPI TMDBAPI = retrofit.create(TheMovieDBAPI.class) ;
 
         Call<ResultsPage> callPage = TMDBAPI.getPopularResults(apiKey, queryPage) ;
 
@@ -58,16 +71,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<ResultsPage> call, Response<ResultsPage> response) {
                         Log.d(TAG, "onResponse: ");
+
+                        //some error handling?
+
                         if (queryPage < response.body().getTotalPages())
                             Log.d(TAG, "onResponse: inside if ");
                             popularActors.addAll(response.body().getResults()) ;
                             queryPage++ ;
-                        Log.d(TAG, "onResponse: " + popularActors.get(0).getName());
+
+                            totalPage = response.body().getPage() ;
+
+                            adapter.setActors(popularActors) ; // notify data set changed?
+
                             //TODO
                             //for loadMore
-
-                        Log.d(TAG, "initPopularActorsByPage: initializing recycler view ") ;
-                        initRecyclerView();
                     }
 
                     @Override
@@ -81,16 +98,5 @@ public class MainActivity extends AppCompatActivity {
 
 
     }//---------------------------------------------------------------------------------------------
-    //--recycler view-------------------------------------------------------------------------------
-    private void initRecyclerView (){
-        Log.v(TAG, "initRecyclerView: ");
-        
-        RecyclerView recyclerView = findViewById(R.id.container) ;
 
-        ContainerAdapter adapter = new ContainerAdapter(this) ;
-        adapter.setActors(popularActors) ;
-
-        recyclerView.setAdapter(adapter) ;
-        recyclerView.setLayoutManager(new LinearLayoutManager(this ));
-    }
 }

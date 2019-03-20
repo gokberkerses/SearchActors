@@ -16,14 +16,19 @@ import com.bumptech.glide.Glide;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.ViewHolder> {
+public class ContainerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int ITEM = 0 ;
+    private static final int LOADING = 1 ;
 
     private static final String TAG = "ContainerAdapter" ;
 
+    private static final String BASE_IMG_URL = "https://image.tmdb.org/t/p/w200" ;
+
     private Context mContext ;
 
-    // TODO
-    // ResultsPage or list<Actor> ? probably second.
+    private boolean willLoad = false ;
+
     List<Actor> actors ;
 
     //constructor
@@ -38,7 +43,8 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
         this.actors =  actorsResult ;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    //---ViewHolders--------------------------------------------------------------------------------
+    protected class ActorViewHolder extends RecyclerView.ViewHolder{
         private static final String TAG = "ViewHolder";
         RelativeLayout actorLayout ;
 
@@ -46,7 +52,7 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
         TextView  actorName ;
         TextView  actorPopularity ;
 
-        public ViewHolder(@NonNull View itemView) {
+        public ActorViewHolder(@NonNull View itemView) {
             super(itemView);
 
             this.actorLayout = itemView.findViewById(R.id.actor_layout) ;
@@ -59,33 +65,65 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
         }
     }
 
+    protected class LoadingViewHolder extends RecyclerView.ViewHolder{
+
+        public LoadingViewHolder(@NonNull View itemView){
+            super(itemView) ;
+        }
+    }
+    //----------------------------------------------------------------------------------------------
+
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
         Log.d(TAG, "onCreateViewHolder: ");
-        View view = LayoutInflater.from(viewGroup.getContext())
-                    .inflate(R.layout.actor_item, viewGroup, false );
-        return new ViewHolder(view) ;
+        RecyclerView.ViewHolder currViewHolder = null ;
+
+        switch (viewType){
+            case ITEM :
+                View viewActor = LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.actor_item, viewGroup, false );
+                currViewHolder = new ActorViewHolder(viewActor) ;
+                break ;
+
+            case LOADING :
+                View viewLoading = LayoutInflater.from(viewGroup.getContext())
+                        .inflate(R.layout.loading_item, viewGroup, false );
+                currViewHolder = new LoadingViewHolder(viewLoading) ;
+                break ;
+        }
+
+        return currViewHolder ; // might evaluate null, but the method is NonNull?
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
         Log.d(TAG, "onBindViewHolder: ");
 
-        String BASE_URL = "https://image.tmdb.org/t/p/w500"; // play with size, for performance
+        switch (getItemViewType(position)) { // TODO
+            case ITEM :
+                ActorViewHolder actorViewHolder = (ActorViewHolder) viewHolder;
 
-        //TODO
-        //from which object .load() will get the uri ?
-        Glide.with(mContext)
-                .asBitmap()
-                .load(BASE_URL + actors.get(position).getProfilePath())
-                .into(viewHolder.actorImage) ;
+                Actor currActor = actors.get(position);
 
-        //name
-        viewHolder.actorName.setText(actors.get(position).getName()) ;
+                Glide.with(mContext)
+                        .asBitmap()
+                        .load(BASE_IMG_URL + currActor.getProfilePath())
+                        .into(actorViewHolder.actorImage);
 
-        //popularity
-        viewHolder.actorPopularity.setText(actors.get(position).getPopularity());
+                //name
+                actorViewHolder.actorName.setText(currActor.getName());
+
+                //popularity
+                actorViewHolder.actorPopularity.setText(currActor.getPopularity());
+
+                break ;
+
+            case LOADING :
+                LoadingViewHolder loadingViewHolder = (LoadingViewHolder) viewHolder ;
+                // what TODO
+                break ;
+        }
 
     }
 
@@ -93,8 +131,25 @@ public class ContainerAdapter extends RecyclerView.Adapter<ContainerAdapter.View
     public int getItemCount() {
         Log.d(TAG, "getItemCount: ");
         
-        return actors.size() ;
+        return actors == null ? 0 : actors.size() ;
     }
 
+
+    @Override
+    public int getItemViewType(int position){
+        return (position == actors.size() - 1 && willLoad) ? LOADING : ITEM ;
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+    public void addDummyActor(){
+        actors.add(new Actor()) ;
+        willLoad = true ;
+    }
+
+    public void removeDummyActor(){
+        actors.remove(actors.size()-1) ; // check.
+        willLoad = false ;
+    }
 
 }

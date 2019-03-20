@@ -18,6 +18,10 @@ public class Actor {
         this.popularity = popularity;
     }
 
+    public Actor() {
+        // for dummy actor, to be able to govern load more
+    }
+
     public String getProfilePath() {
         return profilePath;
     }
